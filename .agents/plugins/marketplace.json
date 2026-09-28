@@ -1,0 +1,20 @@
+{
+  "name": "jev-codex",
+  "interface": {
+    "displayName": "Jev for Codex"
+  },
+  "plugins": [
+    {
+      "name": "jev-codex",
+      "source": {
+        "source": "local",
+        "path": "./plugins/jev-codex"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

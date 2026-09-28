@@ -1,0 +1,36 @@
+{
+  "name": "jev-codex",
+  "version": "0.1.4",
+  "description": "Jev-backed code review, checkpoints, and per-subagent routing for Codex Desktop.",
+  "author": {
+    "name": "SomebooksIT",
+    "url": "https://github.com/SomebooksIT"
+  },
+  "homepage": "https://github.com/SomebooksIT/jev-codex",
+  "repository": "https://github.com/SomebooksIT/jev-codex",
+  "license": "MIT",
+  "keywords": [
+    "jev",
+    "review",
+    "routing",
+    "checkpoints"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Jev for Codex",
+    "shortDescription": "Route subagents, review code, and preserve checkpoints with Jev.",
+    "longDescription": "Adds deterministic Jev code review, preventive workspace checkpoints, and delegation-first model selection for each Codex subagent task.",
+    "developerName": "SomebooksIT",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Code review",
+      "Subagent routing",
+      "Checkpoints"
+    ],
+    "websiteURL": "https://github.com/SomebooksIT/jev-codex",
+    "defaultPrompt": [
+      "Review my current diff with Jev.",
+      "Create a preventive checkpoint for this task."
+    ]
+  }
+}

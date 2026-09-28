@@ -1,0 +1,47 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${PLUGIN_ROOT}/hooks/session_start.py\"",
+            "commandWindows": "py -3 \"${PLUGIN_ROOT}/hooks/session_start.py\"",
+            "timeout": 5,
+            "statusMessage": "Loading Jev session policy...",
+            "additionalContextLimit": 2500
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${PLUGIN_ROOT}/hooks/prompt_router.py\"",
+            "commandWindows": "py -3 \"${PLUGIN_ROOT}/hooks/prompt_router.py\"",
+            "timeout": 5,
+            "statusMessage": "Activating Jev routing...",
+            "additionalContextLimit": 2500
+          }
+        ]
+      }
+    ],
+    "SubagentStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${PLUGIN_ROOT}/hooks/subagent_start.py\"",
+            "commandWindows": "py -3 \"${PLUGIN_ROOT}/hooks/subagent_start.py\"",
+            "timeout": 5,
+            "statusMessage": "Loading Jev subagent policy...",
+            "additionalContextLimit": 2500
+          }
+        ]
+      }
+    ]
+  }
+}

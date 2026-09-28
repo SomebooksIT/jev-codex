@@ -1,0 +1,53 @@
+{
+  "uncertainty": {"minimum": 0.35, "maximum": 0.65},
+  "limits": {
+    "max_input_chars": 250000,
+    "chars_per_token": 3,
+    "max_state_tokens": 24000
+  },
+  "pricing": {"input_per_million_usd": 0.042, "output_per_million_usd": 0.0},
+  "exit_codes": {
+    "MERGE": 0,
+    "NO_DIFF": 0,
+    "NITS": 1,
+    "SECURITY REVIEW": 2,
+    "BLOCK": 3,
+    "UNAVAILABLE": 4
+  },
+  "colors": {"high": 0.7, "uncertain": 0.35},
+  "lanes": [
+    {
+      "verdict": "BLOCK",
+      "exit_code": 3,
+      "rules": [
+        {"check": "hardcoded_secret", "op": "gte", "value": 0.7},
+        {"check": "injection_risk", "op": "gte", "value": 0.7},
+        {"check": "weakens_tests", "op": "gte", "value": 0.8}
+      ]
+    },
+    {
+      "verdict": "SECURITY REVIEW",
+      "exit_code": 2,
+      "rules": [
+        {"check": "breaks_api", "op": "gte", "value": 0.6},
+        {"check": "data_migration", "op": "gte", "value": 0.6},
+        {"check": "touches_auth", "op": "gte", "value": 0.8}
+      ]
+    },
+    {
+      "verdict": "NITS",
+      "exit_code": 1,
+      "rules": [
+        {"check": "description_matches", "op": "lte", "value": 0.4},
+        {"check": "debug_leftovers", "op": "gte", "value": 0.7},
+        {
+          "check": "adds_tests",
+          "op": "lte",
+          "value": 0.2,
+          "unless": {"check": "docs_only", "op": "gte", "value": 0.5}
+        }
+      ]
+    },
+    {"verdict": "MERGE", "exit_code": 0, "rules": []}
+  ]
+}
