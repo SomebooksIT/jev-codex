@@ -10,6 +10,10 @@ This directory is the installable Codex Desktop plugin. Repository-level install
 
 `JEV_ROUTER_DISABLED=1` skips both mandatory delegation and Jev routing before activation.
 
+## TypeSafe API key
+
+Set `TYPESAFE_API_KEY` in the environment that starts Codex Desktop, then quit and reopen Codex and begin a new chat. The repository README contains the complete [Windows, macOS, Linux, and non-secret verification procedure](../../README.md#configure-the-typesafe-key). Do not paste the key into a prompt.
+
 ## Subagent routing
 
 For every non-trivial request containing an independent subtask, Codex creates at least one useful subagent. Before every spawn, it runs `scripts/jev_route.py` on only that subtask. The parent keeps coordination, integration, verification, and the final response.

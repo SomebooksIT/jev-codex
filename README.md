@@ -33,29 +33,46 @@ Open a new Codex chat after installation. Hook and skill discovery occurs when a
 
 ## Configure the TypeSafe key
 
-Never put the key in a prompt, repository, checkpoint, issue, or log.
+Codex reads the key from an environment variable when the Desktop process starts. The variable name must be exactly `TYPESAFE_API_KEY`; its value is the API key alone, without a `Bearer ` prefix. Never put the key in a prompt, repository, checkpoint, issue, or log.
 
-Windows PowerShell, current process:
+### Windows Desktop — recommended
+
+1. Quit Codex Desktop completely.
+2. Open the Start menu and search for **Edit environment variables for your account**.
+3. Under **User variables**, select **New**.
+4. Set **Variable name** to `TYPESAFE_API_KEY`.
+5. Paste the TypeSafe API key into **Variable value**, then confirm every dialog.
+6. Start Codex Desktop again and open a new chat.
+
+You can confirm that the user variable exists without displaying the key:
 
 ```powershell
-$env:TYPESAFE_API_KEY = "<YOUR_TYPESAFE_API_KEY>"
+[bool][Environment]::GetEnvironmentVariable("TYPESAFE_API_KEY", "User")
 ```
 
-Windows, persistent user environment:
+Expected output: `True`.
+
+PowerShell can also save the variable persistently:
 
 ```powershell
 [Environment]::SetEnvironmentVariable("TYPESAFE_API_KEY", "<YOUR_TYPESAFE_API_KEY>", "User")
 ```
 
-Restart Codex Desktop after setting a persistent variable.
+This form can leave the key in shell history, so the Windows dialog is safer. A temporary assignment such as `$env:TYPESAFE_API_KEY = "<YOUR_TYPESAFE_API_KEY>"` reaches Codex only when Codex is launched from that same PowerShell process; it does not update an already-running Desktop app.
 
-macOS or Linux, current shell:
+### macOS or Linux
+
+When launching Codex from a terminal, export the key before starting Codex from that same shell:
 
 ```bash
-export TYPESAFE_API_KEY="<YOUR_TYPESAFE_API_KEY>"
+export TYPESAFE_API_KEY='<YOUR_TYPESAFE_API_KEY>'
 ```
 
-Add the same export to the shell profile used to launch Codex for persistence, then restart Codex.
+For a launcher-started Desktop app, configure the variable in the environment used by that launcher or login session. Quit and reopen Codex after changing it, then start a new chat.
+
+### Verify routing without exposing the key
+
+In the new chat, ask Codex to route a small subtask with Jev and report only `route`, `reason`, `model`, and `reasoning_effort`. Do not ask it to print the environment variable. A selected model/effort confirms that Jev can use the key; `route=inherit` with `reason=api_key_missing` means the restarted Codex process did not receive it. Other `inherit` reasons are documented in [routing fallbacks](docs/routing.md#fallbacks).
 
 ## How routing behaves
 
@@ -100,7 +117,7 @@ codex plugin marketplace remove jev-codex
 
 ## Troubleshooting
 
-- `route=inherit`, `api_key_missing`: set `TYPESAFE_API_KEY` in the environment that launches Codex and restart the app.
+- `route=inherit`, `api_key_missing`: follow [Configure the TypeSafe key](#configure-the-typesafe-key), quit Codex completely, reopen it, and start a new chat.
 - `route=inherit`, `model_discovery_failed`: confirm the installed Codex app exposes `codex app-server --stdio`; inheritance remains safe.
 - No policy in an existing chat: open a new chat after installation or update.
 - Selected model rejected by Codex: the policy retries that subtask once by inheritance without another Jev call.
