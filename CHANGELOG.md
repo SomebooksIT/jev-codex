@@ -2,6 +2,11 @@
 
 All notable changes to Jev for Codex are documented here.
 
+## 0.1.5 - 2026-09-28
+
+- Fixed `JEV_ROUTER_DISABLED=1` so nested `SubagentStart` hooks also return no policy.
+- Aligned the App Server client version with the plugin release.
+
 ## 0.1.4 - 2026-09-28
 
 - Added delegation-first subagent creation for non-trivial independently delegable work.

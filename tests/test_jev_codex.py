@@ -92,7 +92,7 @@ class PluginStructureTests(unittest.TestCase):
         self.assertEqual(marketplace["name"], "jev-codex")
         self.assertEqual(marketplace["interface"]["displayName"], "Jev for Codex")
         self.assertEqual(entry["source"], {"source": "local", "path": "./plugins/jev-codex"})
-        self.assertEqual(manifest["version"], "0.1.4")
+        self.assertEqual(manifest["version"], "0.1.5")
         self.assertEqual(manifest["author"]["name"], "SomebooksIT")
         self.assertEqual(manifest["repository"], "https://github.com/SomebooksIT/jev-codex")
         self.assertEqual(manifest["interface"]["developerName"], "SomebooksIT")
@@ -838,6 +838,17 @@ class HookTests(unittest.TestCase):
 
         self.assertEqual(disabled, {})
         self.assertIn("additionalContext", enabled["hookSpecificOutput"])
+
+    def test_opt_out_skips_nested_subagent_policy(self):
+        *_, subagent_start = hook_modules()
+        with tempfile.TemporaryDirectory() as directory:
+            with mock.patch.dict(os.environ, {"JEV_ROUTER_DISABLED": "1"}):
+                result = subagent_start.subagent_context(
+                    {"session_id": "disabled-nested", "cwd": directory, "model": "gpt-6-sol"},
+                    PLUGIN,
+                )
+
+        self.assertEqual(result, {})
 
     def test_compact_start_loads_only_bounded_checkpoint_content(self):
         checkpoint, _, session_start, _ = hook_modules()

@@ -14,6 +14,8 @@ from prompt_router import routing_policy
 
 
 def subagent_context(event: dict, plugin_root: Path) -> dict:
+    if os.environ.get("JEV_ROUTER_DISABLED") == "1":
+        return {}
     session_id = event.get("session_id")
     cwd = event.get("cwd")
     if not isinstance(session_id, str) or not isinstance(cwd, str):

@@ -173,7 +173,7 @@ def discover_models(
                     "id": 1,
                     "method": "initialize",
                     "params": {
-                        "clientInfo": {"name": "jev-codex", "version": "0.1.3"},
+                        "clientInfo": {"name": "jev-codex", "version": "0.1.5"},
                         "capabilities": {"experimentalApi": True},
                     },
                 },
