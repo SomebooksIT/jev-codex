@@ -367,36 +367,84 @@ class RouterTests(unittest.TestCase):
         self.assertEqual((fast["model"], fast["reasoning_effort"]), ("gpt-5.6-luna", "low"))
         self.assertEqual((deep["model"], deep["reasoning_effort"]), ("gpt-6-astra", "high"))
 
-    def test_effort_scores_map_to_codex_levels(self):
+    def test_effort_scores_are_bounded_by_route_tier(self):
         router = router_module()
         env = {"TYPESAFE_API_KEY": "test-key"}
-        for score, expected in enumerate(("low", "medium", "high", "xhigh", "max")):
-            with self.subTest(score=score):
+        expected_by_tier = {
+            "fast": ("low", "low", "low", "low", "low"),
+            "balanced": ("low", "medium", "medium", "medium", "medium"),
+            "deep": ("high", "high", "high", "xhigh", "max"),
+        }
+        for tier, expected_efforts in expected_by_tier.items():
+            for score, expected in enumerate(expected_efforts):
+                with self.subTest(tier=tier, score=score):
+                    result = router.route_task(
+                        "Implement the isolated change",
+                        current_model="gpt-6-luna",
+                        env=env,
+                        ask=self.fake(
+                            self.response(
+                                tier=tier,
+                                effort=score,
+                                previous_family_insufficient=0.9,
+                                sol_insufficient=0.1,
+                            )
+                        ),
+                        discover=self.catalog,
+                    )
+                    self.assertEqual(result["reasoning_effort"], expected)
+
+    def test_previous_family_threshold_is_tier_specific(self):
+        router = router_module()
+        env = {"TYPESAFE_API_KEY": "test-key"}
+        for tier, boundary in (("fast", 0.5), ("balanced", 0.5), ("deep", 0.3)):
+            with self.subTest(tier=tier, side="previous"):
                 result = router.route_task(
                     "Implement the isolated change",
-                    current_model="gpt-6-luna",
+                    current_model="gpt-6-sol",
                     env=env,
-                    ask=self.fake(self.response(effort=score)),
+                    ask=self.fake(
+                        self.response(
+                            tier=tier,
+                            previous_family_insufficient=boundary,
+                            sol_insufficient=0.1,
+                        )
+                    ),
                     discover=self.catalog,
                 )
-                self.assertEqual(result["reasoning_effort"], expected)
+                self.assertTrue(result["model"].startswith("gpt-5.6-"))
+            with self.subTest(tier=tier, side="current"):
+                result = router.route_task(
+                    "Implement the isolated change",
+                    current_model="gpt-6-sol",
+                    env=env,
+                    ask=self.fake(
+                        self.response(
+                            tier=tier,
+                            previous_family_insufficient=boundary + 0.01,
+                            sol_insufficient=0.1,
+                        )
+                    ),
+                    discover=self.catalog,
+                )
+                self.assertTrue(result["model"].startswith("gpt-6-"))
 
     def test_effort_clamps_upward_and_never_selects_ultra(self):
         router = router_module()
         sparse = [
-            self.model("gpt-6-luna", ("low", "high", "max", "ultra")),
-            self.model("gpt-6-sol"),
+            self.model("gpt-6-sol", ("low", "high", "max", "ultra")),
         ]
 
         result = router.route_task(
-            "List matching files",
-            current_model="gpt-6-luna",
+            "Review a difficult migration",
+            current_model="gpt-6-sol",
             env={"TYPESAFE_API_KEY": "test-key"},
             ask=self.fake(
                 self.response(
-                    tier="fast",
+                    tier="deep",
                     effort=1,
                     previous_family_insufficient=0.9,
+                    sol_insufficient=0.1,
                 )
             ),
             discover=lambda: sparse,
@@ -404,27 +452,6 @@ class RouterTests(unittest.TestCase):
 
         self.assertEqual(result["reasoning_effort"], "high")
         self.assertNotEqual(result["reasoning_effort"], "ultra")
-
-    def test_previous_family_requires_strong_evidence_of_sufficiency(self):
-        router = router_module()
-        env = {"TYPESAFE_API_KEY": "test-key"}
-        previous = router.route_task(
-            "List matching files",
-            current_model="gpt-6-sol",
-            env=env,
-            ask=self.fake(self.response(tier="fast", previous_family_insufficient=0.3)),
-            discover=self.catalog,
-        )
-        current = router.route_task(
-            "List matching files",
-            current_model="gpt-6-sol",
-            env=env,
-            ask=self.fake(self.response(tier="fast", previous_family_insufficient=0.31)),
-            discover=self.catalog,
-        )
-
-        self.assertEqual(previous["model"], "gpt-5.6-luna")
-        self.assertEqual(current["model"], "gpt-6-luna")
 
     def test_balanced_and_deep_roles_use_previous_family_when_sufficient(self):
         router = router_module()

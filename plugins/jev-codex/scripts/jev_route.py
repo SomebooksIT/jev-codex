@@ -18,6 +18,10 @@ from jev_client import JevUnavailable, ask_jev, contains_sensitive_input
 
 EFFORTS = ("low", "medium", "high", "xhigh", "max")
 DEFAULT_EFFORT = {"fast": "low", "balanced": "medium", "deep": "high"}
+MIN_EFFORT = {"fast": "low", "balanced": "low", "deep": "high"}
+MAX_EFFORT = {"fast": "low", "balanced": "medium", "deep": "max"}
+PREVIOUS_FAMILY_MAX = {"fast": 0.5, "balanced": 0.5, "deep": 0.3}
+ASTRA_MIN_SOL_INSUFFICIENT = 0.7
 MODEL_ID = re.compile(r"^gpt-(\d+(?:\.\d+)?)-(luna|terra|sol|astra)$")
 TIERS = ("fast", "balanced", "deep")
 CURRENT_ROLES = {
@@ -122,6 +126,13 @@ def _decision(payload: object) -> tuple[str, float, str, float, float, float]:
     )
     if risk > 0.7:
         effort = EFFORTS[max(2, EFFORTS.index(effort))]
+    else:
+        effort = EFFORTS[
+            min(
+                EFFORTS.index(MAX_EFFORT[tier]),
+                max(EFFORTS.index(MIN_EFFORT[tier]), EFFORTS.index(effort)),
+            )
+        ]
     return tier, confidence, effort, risk, previous_insufficient, sol_insufficient
 
 
@@ -259,10 +270,13 @@ def _select_model(
     previous_insufficient: float,
     sol_insufficient: float,
 ) -> tuple[str, tuple[str, ...]]:
-    if tier == "deep" and sol_insufficient > 0.7:
+    if tier == "deep" and sol_insufficient > ASTRA_MIN_SOL_INSUFFICIENT:
         target_families = ((current_family, ("astra",)),)
     else:
-        use_previous = previous_family is not None and previous_insufficient <= 0.3
+        use_previous = (
+            previous_family is not None
+            and previous_insufficient <= PREVIOUS_FAMILY_MAX[tier]
+        )
         target_families = (
             ((previous_family, PREVIOUS_ROLES[tier]), (current_family, CURRENT_ROLES[tier]))
             if use_previous

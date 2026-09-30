@@ -22,19 +22,19 @@ Tier confidence below `0.30` inherits. Downgrading below the known parent tier r
 
 ## Roles and families
 
-| Tier | Previous family when sufficient | Current family fallback | Default effort |
+| Tier | Previous family when sufficient | Current family fallback | Calibrated effort range |
 |---|---|---|---|
 | `fast` | Luna | Luna, then Sol | `low` |
-| `balanced` | Terra, then Sol | Sol | `medium` |
-| `deep` | Sol | Sol | `high` |
+| `balanced` | Terra, then Sol | Sol | `low` to `medium` |
+| `deep` | Sol | Sol | `high` to `max` |
 
-The previous family is eligible only when its insufficiency probability is at most `0.30`. The current family is otherwise used.
+The previous family is eligible when its insufficiency probability is at most `0.50` for `fast` and `balanced`, or at most `0.30` for `deep`. The current family is otherwise used.
 
 Astra is reserved for `deep` tasks when the probability that current-family Sol is insufficient is greater than `0.70`. High consequence alone does not select Astra; risk above `0.70` raises effort to at least `high` without changing model or family.
 
 ## Effort
 
-Selectable efforts are `low`, `medium`, `high`, `xhigh`, and `max`. `ultra` is intentionally excluded. If the requested effort is unavailable, the router chooses the next supported higher effort, or the highest supported lower effort when none is higher.
+Selectable efforts are `low`, `medium`, `high`, `xhigh`, and `max`. `ultra` is intentionally excluded. Jev's effort score is bounded by the calibrated tier range above; risk above `0.70` can still raise any tier to at least `high`. If the resulting effort is unavailable, the router chooses the next supported higher effort, or the highest supported lower effort when none is higher.
 
 ## Fallbacks
 
