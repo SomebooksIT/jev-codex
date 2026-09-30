@@ -2,6 +2,14 @@
 
 All notable changes to Jev for Codex are documented here.
 
+## 0.1.6 - 2026-09-30
+
+- Calibrated model-family thresholds and reasoning-effort ranges from a 66-run study.
+- Kept Astra behind explicit evidence that current-family Sol is insufficient.
+- Validated the calibrated router in a separate 22-task, 44-run holdout: 22/22 exact-quality passes in both arms and 22.978% fewer paired geometric total execution tokens than `gpt-5.6-sol/medium`.
+- Added public benchmark methodology, a machine-readable result summary, and a social-preview asset.
+- Moved Quick start ahead of Requirements and clarified the workload-scoped token claim.
+
 ## 0.1.5 - 2026-09-28
 
 - Fixed `JEV_ROUTER_DISABLED=1` so nested `SubagentStart` hooks also return no policy.

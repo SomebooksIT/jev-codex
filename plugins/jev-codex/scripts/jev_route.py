@@ -184,7 +184,7 @@ def discover_models(
                     "id": 1,
                     "method": "initialize",
                     "params": {
-                        "clientInfo": {"name": "jev-codex", "version": "0.1.5"},
+                        "clientInfo": {"name": "jev-codex", "version": "0.1.6"},
                         "capabilities": {"experimentalApi": True},
                     },
                 },

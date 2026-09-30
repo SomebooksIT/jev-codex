@@ -92,7 +92,7 @@ class PluginStructureTests(unittest.TestCase):
         self.assertEqual(marketplace["name"], "jev-codex")
         self.assertEqual(marketplace["interface"]["displayName"], "Jev for Codex")
         self.assertEqual(entry["source"], {"source": "local", "path": "./plugins/jev-codex"})
-        self.assertEqual(manifest["version"], "0.1.5")
+        self.assertEqual(manifest["version"], "0.1.6")
         self.assertEqual(manifest["author"]["name"], "SomebooksIT")
         self.assertEqual(manifest["repository"], "https://github.com/SomebooksIT/jev-codex")
         self.assertEqual(manifest["interface"]["developerName"], "SomebooksIT")

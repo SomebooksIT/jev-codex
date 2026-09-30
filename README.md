@@ -1,6 +1,10 @@
 # Jev for Codex
 
-Jev for Codex is a delegation-first plugin for Codex Desktop. It asks Jev to choose the lightest reliable model and reasoning effort for each subagent, provides deterministic code-review policy, and preserves recoverable task checkpoints.
+[![Jev for Codex — 23% fewer execution tokens in a 22-task holdout](assets/jev-codex-social-preview.jpg)](docs/benchmark.md)
+
+Route each Codex subagent to the lightest reliable model and reasoning effort, then fall back safely when Jev cannot make a confident choice. The same plugin adds deterministic code review and recoverable checkpoints to Codex Desktop.
+
+> **About 23% fewer total execution tokens in a 22-task holdout**, compared with `gpt-5.6-sol/medium`, with 22/22 exact-quality passes in both arms. This is a workload-scoped result, not a universal guarantee. [Read the benchmark method and limitations.](docs/benchmark.md)
 
 This is an independent community project. It is not an official project of, or endorsed by, Dario Fontanel, TypeSafe AI, or OpenAI.
 
@@ -15,21 +19,23 @@ This is an independent community project. It is not an official project of, or e
 | Code review | Evaluates 14 typed checks and applies local deterministic policy to produce `BLOCK`, `SECURITY REVIEW`, `NITS`, or `MERGE`. |
 | Checkpoints | Validates a nine-section handoff, rejects likely secrets, confines it to the workspace, and writes atomically. |
 
-## Requirements
-
-- Codex Desktop with plugin hooks and subagents.
-- Python 3.10 or newer available to Codex.
-- Git for review and installation workflows.
-- A TypeSafe System One API key for Jev decisions. The plugin remains usable without one through inheritance fallback.
-
-## Install
+## Quick start
 
 ```powershell
 codex plugin marketplace add SomebooksIT/jev-codex --ref main
 codex plugin add jev-codex@jev-codex
 ```
 
-Open a new Codex chat after installation. Hook and skill discovery occurs when a chat starts.
+Set `TYPESAFE_API_KEY` in the environment used to launch Codex Desktop, quit Codex completely, then open a new chat. Ask Codex to route a small independent subtask and report only `route`, `reason`, `model`, and `reasoning_effort`—never the key itself.
+
+No key yet? The plugin still works: routing returns `route=inherit` and Codex uses the current model.
+
+## Requirements
+
+- Codex Desktop with plugin hooks and subagents.
+- Python 3.10 or newer available to Codex.
+- Git for review and installation workflows.
+- A TypeSafe System One API key for Jev decisions. The plugin remains usable without one through inheritance fallback.
 
 ## Configure the TypeSafe key
 
@@ -79,6 +85,19 @@ In the new chat, ask Codex to route a small subtask with Jev and report only `ro
 The first successful prompt in a chat injects the delegation policy. Before every `spawn_agent`, Codex routes the exact subtask independently. A `route=inherit` result still permits the required subagent; Codex simply omits explicit model and effort overrides.
 
 The router discovers visible general-purpose models and their supported reasoning efforts from a short-lived local `codex app-server --stdio` process. It considers the newest two numeric GPT families present at that time, so it does not depend on hard-coded current-version names. It excludes `ultra` and prefers the lowest-cost pair judged reliable. See [subagent policy](docs/subagents.md) and [routing policy](docs/routing.md).
+
+## Benchmark result
+
+The release policy was selected on 22 calibration tasks, then evaluated on 22 different, frozen repository-analysis tasks. The holdout compared calibrated live Jev routing with `gpt-5.6-sol/medium` across 44 independently recorded executions.
+
+| Metric | Control | Calibrated Jev | Result |
+|---|---:|---:|---:|
+| Exact quality | 22/22 | 22/22 | Equal in the holdout |
+| Total execution tokens | 2,353,254 | 1,645,344 | 30.1% lower aggregate |
+| Paired geometric change | — | — | **23.0% fewer** |
+| Paired bootstrap 95% interval | — | — | 12.4% to 32.9% fewer |
+
+Uncached input did not show a supported reduction, so the public claim is limited to total Codex execution tokens. See [the full benchmark note](docs/benchmark.md) and [machine-readable summary](benchmarks/holdout-2026-09-30.json).
 
 To opt out of both mandatory delegation and Jev routing:
 
@@ -134,7 +153,7 @@ Runtime code uses only the Python standard library. Contribution and security gu
 
 ## Maintenance
 
-This repository is maintained by `SomebooksIT` as an independent community plugin. Compatibility depends on the installed Codex plugin and App Server interfaces; releases are tested on Windows and Ubuntu with Python 3.10 and 3.12.
+This repository is maintained by `SomebooksIT` as an independent community plugin. Compatibility depends on the installed Codex plugin and App Server interfaces; releases are tested on Windows and Ubuntu with Python 3.10 and 3.12. See the [changelog](CHANGELOG.md) for release history.
 
 ## Credits
 

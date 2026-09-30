@@ -1,0 +1,44 @@
+{
+  "date": "2026-09-30",
+  "candidate_commit": "40ca1b7e8f79a2ac5d767fcb39e72348c3d00fee",
+  "codex_version": "codex-cli 0.158.0-alpha.2.1",
+  "control": "gpt-5.6-sol/medium",
+  "tasks": 22,
+  "runs": 44,
+  "quality": {
+    "control_exact_passes": 22,
+    "jev_exact_passes": 22
+  },
+  "total_execution_tokens": {
+    "control": 2353254,
+    "jev": 1645344,
+    "aggregate_change_percent": -30.082,
+    "paired_geometric_change_percent": -22.978,
+    "paired_bootstrap_95_percent": [-32.893, -12.402]
+  },
+  "uncached_input_tokens": {
+    "control": 382541,
+    "jev": 448596,
+    "paired_geometric_change_percent": 21.750,
+    "paired_bootstrap_95_percent": [-16.228, 75.167],
+    "public_savings_claim_supported": false
+  },
+  "by_tier": {
+    "LOW": {"pairs": 8, "paired_geometric_change_percent": -5.934},
+    "MEDIUM": {"pairs": 8, "paired_geometric_change_percent": -35.616},
+    "HIGH": {"pairs": 6, "paired_geometric_change_percent": -25.071}
+  },
+  "route_distribution": {
+    "gpt-5.6-luna/low": 8,
+    "gpt-5.6-terra/medium": 2,
+    "gpt-5.6-sol/medium": 4,
+    "gpt-6-sol/medium": 8
+  },
+  "gates": {
+    "quality": "PASS",
+    "total_execution_tokens": "PASS"
+  },
+  "protocol_sha256": "7b3a77c85dbec4c9c80351225070bc18f748c5703b18ac91151165cb0350c915",
+  "schedule_sha256": "f857591a599b9d6ae9ce5664ee72fe1de3e088fed2124b8467c9c16ec0bd6661",
+  "router_sha256": "d557d3209860eaf06e032a3fcbabd353512260192be78820850b8bc0e4cceceb"
+}
